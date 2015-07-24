@@ -10,7 +10,7 @@ SECRET_KEY='you-will-never-guess'
 
 # OpenID 提供者的列表
 OPENID_PROVIDERS = [
-    { 'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id' },
+    { 'name': 'Google', 'url': 'https://accounts.google.com/ServiceLogin'},
     { 'name': 'Yahoo', 'url': 'https://me.yahoo.com' },
     { 'name': 'AOL', 'url': 'http://openid.aol.com/<username>' },
     { 'name': 'Flickr', 'url': 'http://www.flickr.com/<username>' },
