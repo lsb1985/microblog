@@ -23,3 +23,13 @@ SQLALCHEMY_DATABASE_URI='sqlite:///'+os.path.join(basedir,'app.db')
 #文件夹，我们将会把 SQLAlchemy-migrate 数据文件存储在这里
 SQLALCHEMY_MIGRATE_REPO=os.path.join(basedir,'db_repository')
 
+
+#mail setting
+#在本地伪造一个邮件服务器  python -m smtpd -n -c DebuggingServer localhost:25
+MAIL_SERVER = 'localhost'
+MAIL_PORT = 25
+MAIL_USERNAME = None
+MAIL_PASSWORD = None
+
+#administrator list
+ADMINS=['466255983@qq.com']
