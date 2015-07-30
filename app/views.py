@@ -77,35 +77,35 @@ def after_login(resp):
 @app.route('/user/<nickname>')
 @login_required
 def user(nickname):
-	user=User.query.filter_by(nickname=nickname).first()
-	if user is None:
-		nickname=resp.nickname
-		if nickname is None or nickname=="":
-			nickname=resp.nickname.split('@')[0]
-		nickname=User.make_unique_nickname(nickname)
-		user=User(nickname=nickname,email=resp.email)
-		db.session.add(user)
-		db.session.commit()
+    user=User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        nickname=resp.nickname
+        if nickname is None or nickname=="":
+            nickname=resp.nickname.split('@')[0]
+        nickname=User.make_unique_nickname(nickname)
+        user=User(nickname=nickname,email=resp.email)
+        db.session.add(user)
+        db.session.commit()
 		#flash('User'+nickname+'is not found.')
 		#return redirect(url_for('index'))
-	posts=[
+    posts=[
 		{'author':user,'body':'Test post #1'},
 		{'author':user,'body':'Test post #1'}
 		]
-	return render_template('user.html',user=user,posts=posts)
+    return render_template('user.html',user=user,posts=posts)
 
 #编辑用户信息
 @app.route('/edit', methods=['GET', 'POST'])
 @login_required
 def edit():
-    form = EditForm()
+    form = EditForm(g.user.nickname)
     if form.validate_on_submit():
         g.user.nickname = form.nickname.data
         g.user.about_me = form.about_me.data
         db.session.add(g.user)
         db.session.commit()
         flash('Your changes have been saved.')
-        return 	(url_for('edit'))
+        return redirect(url_for('edit'))
     else:
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
@@ -137,11 +137,11 @@ def load_user(id):
 #404错误
 @app.errorhandler(404)
 def internal_error(error):
-	return render_template('404.html',404)
+	return render_template('404.html'),404
 
 #500错误
 @app.errorhandler(500)
 def internal_error(error):
 	db.session.rollback() #roll back database
-	return render_template('500.html',500)
+	return render_template('500.html'),500
 
