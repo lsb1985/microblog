@@ -37,6 +37,25 @@ class User(db.Model):
 		except NameError:
 			return str(self.id) # python 3
 
+    def is_following(self,user):
+        return self.followed.filter_by(followers.c.followed_id==user.id).count()>0
+
+    #成功返回一个对象，失败返回None
+    def follow(self,user):
+        if not self.is_following(user):
+            self.followed.append(user)
+            return self
+
+    #成功返回一个对象，失败返回None
+    def unfollow(self,user):
+        if self.is_following(user):
+            self.followed.remove(user)
+            return self
+
+    #查询关注者blog的索引
+    def followed_posts(self):
+        return Post.query.join(followers,(followers.c.followed_id==Post.user_id)).filter(followers.c.follower_id==self.id).order_by(Post.timestamp.desc())
+
 	@staticmethod
 	def make_unique_nickname(nickname):
 	    if User.query.filter_by(nickname = nickname).first() == None:
