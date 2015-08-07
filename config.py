@@ -33,3 +33,12 @@ MAIL_PASSWORD = None
 
 #administrator list
 ADMINS=['466255983@qq.com']
+
+# pagination
+POSTS_PER_PAGE = 3
+
+#全文搜索数据库
+WHOOSH_BASE = os.path.join(basedir, 'search.db')
+
+#全文搜索返回的最大数量
+MAX_SEARCH_RESULTS = 50

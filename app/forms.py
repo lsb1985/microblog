@@ -35,3 +35,12 @@ class EditForm(Form):
     		self.nickname.errors.append('This nickname is already in use. Please choose another one.')
     		return False
     	return True
+
+#post form
+class PostForm(Form):
+    post=StringField('post',validators=[DataRequired()])
+
+#search form
+class SearchForm(Form):
+    search=StringField('search',validators=[DataRequired()])
+    

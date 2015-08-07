@@ -1,7 +1,15 @@
 # -*-coding:utf-8 -*-
 
-from app import db
+from app import db,app
 import hashlib
+
+# import sys
+# if sys.version_info >= (3,0):
+# 	enable_search=False
+# 	print(sys.version_info)
+# else:
+# 	enable_search=True
+import flask.ext.whooshalchemy as whooshalchemy
 
 #关注，关联表
 followers=db.Table('followers',
@@ -36,25 +44,26 @@ class User(db.Model):
 			return unicode(self.id) # python 2
 		except NameError:
 			return str(self.id) # python 3
-
-    def is_following(self,user):
-        return self.followed.filter_by(followers.c.followed_id==user.id).count()>0
-
-    #成功返回一个对象，失败返回None
-    def follow(self,user):
-        if not self.is_following(user):
-            self.followed.append(user)
-            return self
+			
+	def is_following(self,user):
+		return self.followed.filter_by(followers.c.followed_id==user.id).count()>0
 
     #成功返回一个对象，失败返回None
-    def unfollow(self,user):
-        if self.is_following(user):
-            self.followed.remove(user)
-            return self
+	def follow(self,user):
+		if not self.is_following(user):
+			self.followed.append(user)
+			return self
+
+
+    #成功返回一个对象，失败返回None
+	def unfollow(self,user):
+		if self.is_following(user):
+			self.followed.remove(user)
+			return self
 
     #查询关注者blog的索引
-    def followed_posts(self):
-        return Post.query.join(followers,(followers.c.followed_id==Post.user_id)).filter(followers.c.follower_id==self.id).order_by(Post.timestamp.desc())
+	def followed_posts(self):
+		return Post.query.join(followers,(followers.c.followed_id==Post.user_id)).filter(followers.c.follower_id==self.id).order_by(Post.timestamp.desc())
 
 	@staticmethod
 	def make_unique_nickname(nickname):
@@ -75,6 +84,8 @@ class User(db.Model):
 	
 #Post table	
 class Post(db.Model):
+	__searchable__ = ['body']
+	
 	id=db.Column(db.Integer,primary_key=True)
 	body = db.Column(db.String(140))
 	timestamp=db.Column(db.DateTime)
@@ -82,3 +93,6 @@ class Post(db.Model):
 
 	def __repr__(self):
 		return '<Post %r>' %(self.body)
+
+# if enable_search:
+whooshalchemy.whoosh_index(app, Post) #初始化全文搜索索引
